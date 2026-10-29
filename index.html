@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>碩仁小五社會科 CH1~2 複習大挑戰</title>
+<style>
+  :root{
+    --bg1:#fef6e4; --bg2:#e0f7fa;
+    --primary:#ff7f50; --primary-dark:#e85d2f;
+    --blue:#4da3ff; --blue-dark:#2f7ad1;
+    --green:#4caf50; --red:#f44336;
+    --card:#ffffff; --text:#2d2d2d; --muted:#767676;
+    --shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:"PingFang TC","Microsoft JhengHei","Heiti TC",sans-serif;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2) 70%);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:16px;
+  }
+  .screen{display:none; flex-direction:column; flex:1; animation:fadeIn .25s ease;}
+  .screen.active{display:flex;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+  h1.title{
+    text-align:center;
+    font-size:1.5rem;
+    margin:8px 0 4px;
+    color:var(--primary-dark);
+  }
+  .subtitle{text-align:center;color:var(--muted);font-size:0.9rem;margin-bottom:20px;}
+
+  .card{
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:18px;
+    margin-bottom:16px;
+  }
+
+  .option-group{display:flex;flex-direction:column;gap:10px;margin:10px 0 18px;}
+  .pill-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .pill{
+    flex:1 1 auto;
+    text-align:center;
+    padding:12px 10px;
+    border-radius:999px;
+    border:2px solid #ddd;
+    background:#fff;
+    font-size:0.95rem;
+    cursor:pointer;
+    transition:all .15s ease;
+    user-select:none;
+  }
+  .pill.selected{border-color:var(--primary); background:#fff1e9; color:var(--primary-dark); font-weight:bold;}
+  .pill:active{transform:scale(0.96);}
+
+  .big-btn{
+    display:block;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    font-size:1.05rem;
+    font-weight:bold;
+    color:#fff;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    box-shadow:0 4px 14px rgba(232,93,47,0.35);
+    cursor:pointer;
+    margin-top:6px;
+    transition:transform .1s ease;
+  }
+  .big-btn:active{transform:scale(0.98);}
+  .big-btn.secondary{
+    background:linear-gradient(135deg,var(--blue),var(--blue-dark));
+    box-shadow:0 4px 14px rgba(47,122,209,0.35);
+  }
+  .big-btn.ghost{
+    background:#fff;
+    color:var(--primary-dark);
+    border:2px solid var(--primary);
+    box-shadow:none;
+  }
+
+  .progress-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+    font-size:0.85rem;
+    color:var(--muted);
+  }
+  .progress-bar-bg{
+    flex:1;
+    height:10px;
+    border-radius:999px;
+    background:#eee;
+    overflow:hidden;
+  }
+  .progress-bar-fill{
+    height:100%;
+    background:linear-gradient(90deg,var(--primary),#ffb26b);
+    width:0%;
+    transition:width .3s ease;
+  }
+  .score-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .streak{font-weight:bold;color:var(--primary-dark);}
+
+  .q-text{
+    font-size:1.12rem;
+    line-height:1.6;
+    margin-bottom:16px;
+    white-space:pre-wrap;
+  }
+  .q-badge{
+    display:inline-block;
+    font-size:0.72rem;
+    color:#fff;
+    background:var(--blue);
+    padding:2px 10px;
+    border-radius:999px;
+    margin-bottom:8px;
+  }
+  .q-badge.tf{background:#9c6ade;}
+
+  .opt-btn{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:100%;
+    text-align:left;
+    padding:13px 14px;
+    border-radius:14px;
+    border:2px solid #e3e3e3;
+    background:#fff;
+    font-size:0.98rem;
+    line-height:1.4;
+    cursor:pointer;
+    margin-bottom:10px;
+    transition:all .15s ease;
+  }
+  .opt-btn .opt-tag{
+    flex:0 0 auto;
+    width:26px;height:26px;
+    border-radius:50%;
+    background:#f0f0f0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:0.85rem;font-weight:bold;color:#888;
+  }
+  .opt-btn:active{transform:scale(0.98);}
+  .opt-btn.correct{border-color:var(--green); background:#eafaf0;}
+  .opt-btn.correct .opt-tag{background:var(--green); color:#fff;}
+  .opt-btn.wrong{border-color:var(--red); background:#fdecea;}
+  .opt-btn.wrong .opt-tag{background:var(--red); color:#fff;}
+  .opt-btn.disabled{pointer-events:none;}
+
+  .tf-row{display:flex; gap:14px; margin-bottom:10px;}
+  .tf-btn{
+    flex:1;
+    padding:28px 10px;
+    border-radius:18px;
+    border:3px solid #e3e3e3;
+    background:#fff;
+    font-size:2.2rem;
+    font-weight:bold;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .tf-btn.o{color:var(--green);}
+  .tf-btn.x{color:var(--red);}
+  .tf-btn.correct{background:#eafaf0;border-color:var(--green);}
+  .tf-btn.wrong{background:#fdecea;border-color:var(--red);}
+  .tf-btn.disabled{pointer-events:none;}
+  .tf-btn:active{transform:scale(0.97);}
+
+  .feedback{
+    text-align:center;
+    font-size:1rem;
+    font-weight:bold;
+    min-height:1.6em;
+    margin:4px 0 10px;
+  }
+  .feedback.correct{color:var(--green);}
+  .feedback.wrong{color:var(--red);}
+
+  .footer-note{
+    text-align:center;
+    font-size:0.72rem;
+    color:#aaa;
+    margin-top:auto;
+    padding-top:18px;
+    line-height:1.6;
+  }
+
+  .result-score{
+    text-align:center;
+    font-size:3rem;
+    font-weight:bold;
+    color:var(--primary-dark);
+    margin:4px 0;
+  }
+  .result-sub{text-align:center;color:var(--muted);margin-bottom:6px;}
+  .stars{text-align:center;font-size:1.8rem;letter-spacing:4px;margin-bottom:14px;}
+  .best-note{text-align:center;font-size:0.82rem;color:#c08a00;margin-bottom:10px;}
+
+  .review-item{
+    border-bottom:1px solid #eee;
+    padding:10px 0;
+    font-size:0.88rem;
+  }
+  .review-item:last-child{border-bottom:none;}
+  .review-q{margin-bottom:4px;}
+  .review-ans{color:var(--green); font-weight:bold;}
+  .review-your{color:var(--red);}
+  .review-toggle{
+    text-align:center;
+    color:var(--blue-dark);
+    font-size:0.88rem;
+    cursor:pointer;
+    margin:4px 0 10px;
+    text-decoration:underline;
+  }
+
+  select{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:2px solid #ddd;
+    font-size:0.95rem;
+    background:#fff;
+    margin-top:6px;
+  }
+  label.field-label{font-size:0.9rem;color:var(--muted);margin-top:14px;display:block;}
+
+  .lesson-card{
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:14px 16px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:transform .1s ease;
+  }
+  .lesson-card:active{transform:scale(0.98);}
+  .lesson-unit{font-size:0.78rem;color:var(--blue-dark);font-weight:bold;margin-bottom:2px;}
+  .lesson-title{font-size:1.05rem;font-weight:bold;color:var(--text);}
+  .lesson-pages{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+
+  .back-link{
+    color:var(--blue-dark);
+    font-size:0.9rem;
+    margin-bottom:10px;
+    cursor:pointer;
+    display:inline-block;
+  }
+  .point-list{margin:0;padding-left:1.1em;}
+  .point-list li{margin-bottom:10px;line-height:1.6;font-size:0.95rem;}
+  .img-gallery{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .img-gallery img{width:100%;border-radius:12px;box-shadow:var(--shadow);}
+  .img-empty-note{
+    font-size:0.85rem;
+    color:var(--muted);
+    background:#f5f5f5;
+    border-radius:12px;
+    padding:12px;
+    margin-top:14px;
+    line-height:1.6;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 首頁 -->
+  <div class="screen active" id="screen-home">
+    <h1 class="title">社會科複習大挑戰</h1>
+    <div class="subtitle">碩仁小五・康軒版 CH1~2　考前複習</div>
+
+    <div class="card">
+      <label class="field-label">① 選題型</label>
+      <div class="pill-row" id="mode-group">
+        <div class="pill selected" data-mode="mix">混合（是非＋選擇）</div>
+        <div class="pill" data-mode="tf">只練是非題</div>
+        <div class="pill" data-mode="mc">只練選擇題</div>
+      </div>
+
+      <label class="field-label">② 選題數</label>
+      <div class="pill-row" id="count-group">
+        <div class="pill" data-count="10">10 題</div>
+        <div class="pill selected" data-count="20">20 題</div>
+        <div class="pill" data-count="40">40 題</div>
+        <div class="pill" data-count="all">全部</div>
+      </div>
+
+      <button class="big-btn" id="btn-start" style="margin-top:20px;">🚀 開始挑戰</button>
+      <button class="big-btn ghost" id="btn-goto-lessons" style="margin-top:10px;">📖 查看課文內容</button>
+    </div>
+
+    <div class="card" id="best-card" style="display:none;">
+      <div style="font-size:0.9rem;color:var(--muted);">🏆 這個組合的最高分</div>
+      <div id="best-text" style="font-size:1.1rem;font-weight:bold;color:var(--primary-dark);margin-top:4px;"></div>
+    </div>
+
+    <div class="footer-note">
+      題庫來源：碩仁小五 社會科考前複習（康軒版 CH1~2），共 100 題是非題 + 100 題選擇題。<br>
+      答案依家長提供的手寫已作答考卷核對整理，如發現題目有誤請隨時回報修正。
+    </div>
+  </div>
+
+  <!-- 遊戲畫面 -->
+  <div class="screen" id="screen-quiz">
+    <div class="score-row">
+      <div>第 <span id="q-index">1</span> / <span id="q-total">20</span> 題</div>
+      <div>答對 <span id="score-now">0</span>　<span class="streak" id="streak-text"></span></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="card">
+      <span class="q-badge" id="q-badge">選擇題</span>
+      <div class="q-text" id="q-text">題目文字</div>
+
+      <div id="tf-area" style="display:none;">
+        <div class="tf-row">
+          <button class="tf-btn o" id="tf-o">○</button>
+          <button class="tf-btn x" id="tf-x">✕</button>
+        </div>
+      </div>
+
+      <div id="mc-area" style="display:none;"></div>
+
+      <div class="feedback" id="feedback"></div>
+      <button class="big-btn secondary" id="btn-next" style="display:none;">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- 結算畫面 -->
+  <div class="screen" id="screen-result">
+    <h1 class="title">挑戰結束！</h1>
+    <div class="card">
+      <div class="result-score" id="result-score">0 / 0</div>
+      <div class="result-sub" id="result-pct">答對率 0%</div>
+      <div class="stars" id="result-stars">⭐⭐⭐</div>
+      <div class="best-note" id="best-note"></div>
+      <button class="big-btn" id="btn-again">🔁 再玩一次（同樣設定）</button>
+      <button class="big-btn secondary" id="btn-home">🏠 回首頁重新選題</button>
+    </div>
+
+    <div class="card" id="review-card" style="display:none;">
+      <div class="review-toggle" id="review-toggle">▼ 查看答錯的題目（<span id="review-count">0</span> 題）</div>
+      <div id="review-list" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- 課文內容列表 -->
+  <div class="screen" id="screen-lessons">
+    <span class="back-link" id="lessons-back-home">← 回首頁</span>
+    <h1 class="title" style="margin-top:4px;">課文內容</h1>
+    <div class="subtitle">第一單元＋第二單元　重點整理</div>
+    <div id="lesson-list"></div>
+    <div class="footer-note">
+      內容是依照課程計畫整理的重點摘要，不是課本逐字內容。<br>
+      課本內頁圖片待補充，拍照傳過來之後會補進對應課別。
+    </div>
+  </div>
+
+  <!-- 課文內容詳細 -->
+  <div class="screen" id="screen-lesson-detail">
+    <span class="back-link" id="lesson-detail-back">← 回課文列表</span>
+    <div class="card">
+      <div class="lesson-unit" id="lesson-detail-unit"></div>
+      <h1 class="title" style="text-align:left;margin:2px 0 2px;" id="lesson-detail-title"></h1>
+      <div class="lesson-pages" id="lesson-detail-pages"></div>
+      <ul class="point-list" id="lesson-detail-points" style="margin-top:14px;"></ul>
+      <div id="lesson-detail-images"></div>
+    </div>
+  </div>
+
+</div>
+
+<script id="quiz-data" type="application/json">
+{"tf": [{"id": 1, "q": "將世界地圖局部放大，臺灣的東、西方分別與太平洋、臺灣海峽相鄰。", "answer": "O"}, {"id": 2, "q": "住在臺灣的公翰寒假規畫要到南韓（韓國）滑雪，他搭乘的直飛航班可能會經過東海上空。", "answer": "O"}, {"id": 3, "q": "臺灣的面積小，即使將世界地圖放大，也找不到臺灣的位置。", "answer": "X"}, {"id": 4, "q": "想要看到臺灣所在的位置，可以觀察世界地圖。", "answer": "O"}, {"id": 5, "q": "從海陸位置看臺灣，位居亞洲東部和太平洋的交界。", "answer": "O"}, {"id": 6, "q": "日本人來臺灣旅遊，搭飛機距離最短的飛行航線應該是從日本往西南飛。", "answer": "O"}, {"id": 7, "q": "在地圖上可以看到臺灣東北方的鄰國有南韓（韓國）、日本。", "answer": "O"}, {"id": 8, "q": "琉球嶼和小琉球是兩個不同的島嶼。", "answer": "X"}, {"id": 9, "q": "臺灣的過境航路服務費收入可觀，與臺灣的地勢高低起伏有關。", "answer": "X"}, {"id": 10, "q": "臺灣的周邊島嶼眾多，琉球嶼（小琉球）和琉球群島都是臺灣管轄的範圍。", "answer": "X"}, {"id": 11, "q": "早期在海邊採集海菜、海膽的水產來販售的工作，稱為「海女」。", "answer": "O"}, {"id": 12, "q": "由地圖資料可判斷，位在南沙群島的太平島距離臺灣，比其他臺灣的周邊島嶼都要遠。", "answer": "O"}, {"id": 13, "q": "臺灣有許多與海洋有關的民間信仰，例如：漢人出海前會祭拜媽祖，以祈求捕魚平安。", "answer": "O"}, {"id": 14, "q": "Doris居住在海邊漁村，從事海女工作，她的工作內容可能是到山上採集野菜。", "answer": "X"}, {"id": 15, "q": "臺灣的周邊島嶼中，沒有島嶼位於南海。", "answer": "X"}, {"id": 16, "q": "臺灣四面都是海洋，可以讓人們與世界交流。", "answer": "O"}, {"id": 17, "q": "臺灣的地理位置有助於海運發展，但是對空運沒有任何優勢。", "answer": "X"}, {"id": 18, "q": "阿美族和漢人都會在重要的節日或祭典團聚，因此兩個群體擁有一樣的風俗習慣。", "answer": "X"}, {"id": 19, "q": "交通規則屬於法律，所有人都要遵守，不遵守的人可能會受到懲罰與制裁。", "answer": "O"}, {"id": 20, "q": "漢人在中秋節時與家人團聚的行為，屬於社會規範中的法律。", "answer": "X"}, {"id": 21, "q": "社會規範是針對身分地位較低的人而制定的，地位較高的人不需要遵守。", "answer": "X"}, {"id": 22, "q": "早期男孩和女孩滿月時都會請吃油飯慶祝，隨著時代變遷，現在只有男孩滿月才會送油飯分享喜悅。", "answer": "X"}, {"id": 23, "q": "在公車或捷運上，如果沒有讓座給老年人是違反法律的行為，會受到懲罰。", "answer": "X"}, {"id": 24, "q": "行人要走行人穿越道屬於社會規範中的法律，因此所有人都要遵守。", "answer": "O"}, {"id": 25, "q": "社會規範使生活在臺灣的不同性別、族群、宗教等群體，能夠和平相處，過著有秩序的生活。", "answer": "O"}, {"id": 26, "q": "大家共同遵守社會規範，可以減少人與人之間的衝突與紛爭。", "answer": "O"}, {"id": 27, "q": "每個人如果都能遵守倫理道德，人際相處會更加和諧。", "answer": "O"}, {"id": 28, "q": "社會上許多風俗習慣，都是各群體長時間生活在一起，形成約定俗成的生活習慣、生命禮俗，以及歲時節慶活動等。", "answer": "O"}, {"id": 29, "q": "汽車、機車駕駛不得違規停車，屬於社會規範中的倫理道德。", "answer": "X"}, {"id": 30, "q": "大多數的宗教信仰都有相同的規定，都需要遵守聖經上規定的博愛精神。", "answer": "X"}, {"id": 31, "q": "早期人們結婚時會盡量避開農曆七月，現在則較不忌諱，這是社會規範和社會發展改變的案例之一。", "answer": "O"}, {"id": 32, "q": "所有的宗教信仰對於信徒所制定的規定都是一樣的。", "answer": "X"}, {"id": 33, "q": "兒童及少年福利與權益保障法所保障的對象，是未滿十五歲的少年。", "answer": "X"}, {"id": 34, "q": "我們在學校能夠上到閩南語、客語、臺灣手語等課程，與國家語言發展法的制定有關。", "answer": "O"}, {"id": 35, "q": "在法治社會，政府必須依法行政，保障多數人的權益。", "answer": "O"}, {"id": 36, "q": "法律所規定的事項，不論政府或人民，都必須遵守。", "answer": "O"}, {"id": 37, "q": "法律由政府制定，只限制政府，不適用於一般人民。", "answer": "X"}, {"id": 38, "q": "政府對於經濟有困難的家庭，提供生活扶助與醫療補助，讓兒童及少年得到合宜的照顧。", "answer": "O"}, {"id": 39, "q": "網路具有匿名的特性，網友不會知道是誰在發言，所以可以隨意在網路上侮辱他人或散布不實的言論。", "answer": "X"}, {"id": 40, "q": "為了慶祝國小畢業，在畢業典禮上，國小學童可以喝水果酒慶祝。", "answer": "X"}, {"id": 41, "q": "政府制定國家語言發展法，讓每一位國民都能更有自信、尊嚴使用自己的語言。", "answer": "O"}, {"id": 42, "q": "我國的法律明確規定人民和政府必須遵守的事項，以保障人民的權益，維持社會秩序。", "answer": "O"}, {"id": 43, "q": "國小六年級的學生因為尚未成年，不需要負法律上的責任，所以不必遵守法律。", "answer": "X"}, {"id": 44, "q": "由於臺灣最多人使用的語言是國語，因此政府及相關單位在編製語言教材及繪本時，都是以國語來編製。", "answer": "X"}, {"id": 45, "q": "生存權是我們在創作完成時所享有的權利，受到國家法律的保護。", "answer": "X"}, {"id": 46, "q": "竊盜、吸毒並不違反法律，因此只會被罰款。", "answer": "X"}, {"id": 47, "q": "兒童及少年福利與權益保障法保障的對象，包含十八歲以上的人。", "answer": "X"}, {"id": 48, "q": "只要是在公共設施受傷，就算是自己貪玩或不正確使用所造成的，也可以要求國家賠償。", "answer": "X"}, {"id": 49, "q": "臺北盆地因為交通建設、政策推展等因素，現在已發展成高樓林立、工商業繁榮、公共設施完善的都市。", "answer": "O"}, {"id": 50, "q": "淡水河上游的翡翠水庫，供應臺北市與部分新北市地區的用水。", "answer": "O"}, {"id": 51, "q": "臺灣北部海岸有許多海灣，因為海灣內海水較深、風浪小，適合興建港口，人們多從事漁業或貨物運輸等。", "answer": "O"}, {"id": 52, "q": "檢視臺灣地形分布圖，可以發現島上的山脈分布於西部，東部則有廣闊的平原地形。", "answer": "X"}, {"id": 53, "q": "水庫可以儲水，還具有水力發電功能，且不會破壞環境自然生態，所以我們應該多多興建水庫。", "answer": "X"}, {"id": 54, "q": "翡翠水庫的興建只會影響生態環境，例如：淹沒翡翠樹蛙的棲地，並不會影響當地居民的生活。", "answer": "X"}, {"id": 55, "q": "朕瑋開車從桃園南下到新竹科學園區拜訪客戶，沿途會經過桃園台地和竹東丘陵。", "answer": "O"}, {"id": 56, "q": "臺灣的河川多往北方向分流，這是受到地形的影響。", "answer": "X"}, {"id": 57, "q": "臺灣島形狀為南北長、東西窄，擁有豐富多樣的地形。", "answer": "O"}, {"id": 58, "q": "水庫大多興建在河川上游，人們大多聚集在這裡生活。", "answer": "X"}, {"id": 59, "q": "茶樹是竹東丘陵重要的農作物，早期許多居民會從事採茶、種茶及製茶的活動。", "answer": "O"}, {"id": 60, "q": "臺灣島位於歐亞板塊與菲律賓海板塊的交界處，板塊的推擠使臺灣島隆起。", "answer": "O"}, {"id": 61, "q": "河川上游、中游通常河道寬廣，地勢平坦，早期人們大多聚集在這裡生活。", "answer": "X"}, {"id": 62, "q": "臺灣北部有許多山脈緊貼海岸，山壁直入海非常壯麗。", "answer": "X"}, {"id": 63, "q": "人們過度的開發、使用山地的森林資源，會對環境生態造成影響。", "answer": "O"}, {"id": 64, "q": "人們利用地形、河川和海岸等自然環境時，會改變當地的景觀與樣貌，呈現各種不同的土地利用情形。", "answer": "O"}, {"id": 65, "q": "早期居住在丘陵的人們，多會在山坡平緩處從事農業活動，例如：種植茶樹、果樹等。", "answer": "O"}, {"id": 66, "q": "因為臺灣的雨量不足，人們在部分河川上游、中游興建水庫儲存水資源，解決缺水問題。", "answer": "X"}, {"id": 67, "q": "臺灣島位於歐亞板塊與菲律賓海板塊的交界處，由於板塊間長期的推擠，使島嶼的形狀為南北長、東西窄，島上的山脈也多呈南北走向。", "answer": "O"}, {"id": 68, "q": "若要欣賞清澈的海水和美麗的珊瑚礁，可以前往臺灣的南部海岸。", "answer": "O"}, {"id": 69, "q": "擴建桃園國際機場的過程中，由於地形起伏較大，需要填平四周高中間低的盆地，才有充足的使用空間。", "answer": "X"}, {"id": 70, "q": "臺灣東部海岸地勢陡峭，多斷崖峭壁，加上山脈的屏障，當地人們與外地交流較為困難。", "answer": "O"}, {"id": 71, "q": "雪山山脈的八仙山森林資源豐富，早期是臺灣木材產地之一。", "answer": "O"}, {"id": 72, "q": "從空中俯瞰桃園台地，可以看到許多過去為了灌溉農田而興建的埤塘。", "answer": "O"}, {"id": 73, "q": "臺灣的丘陵早期若作為農業用地，常開闢成茶園，居民會從事採茶活動。", "answer": "O"}, {"id": 74, "q": "臺灣有多樣的地形，包含平坦廣闊的平原、四周高且中間平坦的盆地、地勢稍高且頂部平坦的台地、地勢起伏不平的丘陵與高聳的山地，以及各具特色的海岸。", "answer": "O"}, {"id": 75, "q": "近年來，人們為了開發八仙山的森林資源，積極進行大規模的伐木等。", "answer": "X"}, {"id": 76, "q": "由於臺灣的地理位置位於歐亞大陸和太平洋的交界，使得南投縣仁愛鄉與埔里鎮呈現不同的氣候情形。", "answer": "X"}, {"id": 77, "q": "颱風侵襲臺灣時，常會造成人們生命、財產的損失。", "answer": "O"}, {"id": 78, "q": "臺灣的雨量豐沛，冬季時南部溼冷多雨。", "answer": "X"}, {"id": 79, "q": "風力發電機會配合季風的風向而轉向，冬季時會面向東北方。", "answer": "O"}, {"id": 80, "q": "十一月至隔年四月間，臺灣較可能發生乾旱，有時發生旱災容易影響民生用水供應，也會限制產業發展。", "answer": "O"}, {"id": 81, "q": "凱米颱風過後造成各地農業損失，由此可知颱風對我們生活只會帶來威脅。", "answer": "X"}, {"id": 82, "q": "臺南的沿海地區擁有充足日照及強勁風力，且夏季乾燥少雨，所以早期是鹽的重要產地。", "answer": "X"}, {"id": 83, "q": "為了讓學生在各種天氣狀況下都能運動，學校會規畫沒有屋頂的露天球場。", "answer": "X"}, {"id": 84, "q": "臺灣南部地區，通常雨量最多的季節在冬季。", "answer": "X"}, {"id": 85, "q": "臺灣每年五月至九月的東北季風，時常引發豪雨，帶來淹水、土石流等災情。", "answer": "X"}, {"id": 86, "q": "臺灣冬季受東北季風影響，夏季受西南季風影響。", "answer": "O"}, {"id": 87, "q": "臺灣位於歐亞大陸和太平洋的交界，且在颱風的移動路徑上，容易受到颱風影響。", "answer": "O"}, {"id": 88, "q": "臺灣只有颱風會造成淹水的情形，梅雨或西南季風帶來的雨量都很小，不會造成豪雨災情。", "answer": "X"}, {"id": 89, "q": "觀察學校的風雨球場、人行道上的遮雨棚、以瓦片堆疊成斜屋頂等樣貌，這些設施都是因應乾燥的氣候而興建。", "answer": "X"}, {"id": 90, "q": "琮期想要找一片農地種植適合低溫生長的水梨，他應該要在以山地地形為主的南投縣埔里鎮栽種較適合。", "answer": "X"}, {"id": 91, "q": "臺灣位在東北亞與東南亞各國互相往來的中點，雖然交通位置重要，但對於臺灣的經濟並無幫助。", "answer": "X"}, {"id": 92, "q": "南韓（韓國）和日本是我們的鄰國，與臺灣之間隔著東海。", "answer": "O"}, {"id": 93, "q": "阿美族的歲時節慶活動，包括每三年舉行一次的豐年祭，祭典中表達了對祖先的懷念與感恩，也是文化傳承的重要活動。", "answer": "X"}, {"id": 94, "q": "社會規範是以前就流傳下來的，無論社會如何發展與改變，社會規範都是不能改變的。", "answer": "X"}, {"id": 95, "q": "政府為了保護兒童，將電影、電視分級，禁止兒童觀看不適合的電影、電視，同時也對於經濟困難的兒童，提供生活扶助或課後照顧服務。", "answer": "O"}, {"id": 96, "q": "法律明確規定人民和政府必須遵守的事項，如果不遵守法律，可能會受到法律的處罰。", "answer": "O"}, {"id": 97, "q": "臺灣早期是農業社會，會挖掘埤塘儲水。隨著都市與工商業的發展，原本的埤塘都會被保留下來，規畫成居民休閒的場所。", "answer": "X"}, {"id": 98, "q": "清華大學、陽明交通大學及新竹科學園區的周邊有密集的住宅與四通八達的交通建設，因此這裡的地形應該是平原。", "answer": "X"}, {"id": 99, "q": "臺南沿海地區的居民早期發展鹽業，現在當地仍然是鹽的重要產地，還發展休閒觀光與教育推廣。", "answer": "X"}, {"id": 100, "q": "臺灣每年在梅雨、西南季風及颱風來襲的季節，常會引發豪雨，當雨水宣洩不及，平地或低窪地區就會造成淹水的災情。", "answer": "O"}], "mc": [{"id": 1, "q": "有關雅美族（達悟族）的敘述，下列何者錯誤？", "options": ["大多居住在蘭嶼", "以牽罟文化聞名", "拼板舟是重要的捕魚工具", "新船下水前會舉行祭典，祈禱族人漁獲豐收"], "answer": "以牽罟文化聞名"}, {"id": 2, "q": "下列何者可能是龜山島名字的由來？", "options": ["在附近浮潛可以看到海龜", "島的外形看起來像烏龜", "島上有很多烏龜", "原住民族語對島的稱呼聽起來像「龜山」"], "answer": "島的外形看起來像烏龜"}, {"id": 3, "q": "梳攏是居住海邊漁村的海女，她平時會到海岸邊撿拾、採集水產可能有哪些？甲.海菜　乙.海膽　丙.野菜", "options": ["甲乙", "乙丙", "甲丙", "甲乙丙"], "answer": "甲乙"}, {"id": 4, "q": "臺灣的東邊和西邊各有哪一個海洋？", "options": ["太平洋、巴士海峽", "巴士海峽、東海", "太平洋、臺灣海峽", "臺灣海峽、東海"], "answer": "太平洋、臺灣海峽"}, {"id": 5, "q": "下列何者不屬於東南亞的國家？", "options": ["菲律賓", "新加坡", "南韓（韓國）", "越南"], "answer": "南韓（韓國）"}, {"id": 6, "q": "下列關於臺灣周邊島嶼的敘述，哪一項正確？", "options": ["琉球嶼（小琉球）位於東海上", "綠島、蘭嶼位於臺灣東南邊", "馬祖列嶼是臺灣最南邊的島嶼", "金門列嶼因外形似烏龜而得名"], "answer": "綠島、蘭嶼位於臺灣東南邊"}, {"id": 7, "q": "居住在海邊漁村的女性，在海岸邊採集水產來販售、補貼家用的工作稱為什麼？", "options": ["果農", "海女", "牽罟", "潛水夫"], "answer": "海女"}, {"id": 8, "q": "臺灣為海洋所包圍，東邊的海洋，請問是下列何者？", "options": ["大西洋", "印度洋", "太平洋", "南海"], "answer": "太平洋"}, {"id": 9, "q": "下列何者不屬於東北亞的國家？", "options": ["日本", "新加坡", "北韓", "南韓（韓國）"], "answer": "新加坡"}, {"id": 10, "q": "下列何者不屬於世界上的五大洲之一？", "options": ["亞洲", "澳洲", "歐洲", "非洲"], "answer": "澳洲"}, {"id": 11, "q": "碩仁旅行社推出了一個套裝行程，只要一星期即可玩遍臺灣海峽上臺灣的周邊島嶼。下列哪個島嶼不會在行程之中？", "options": ["澎湖群島", "琉球嶼（小琉球）", "金門列嶼", "綠島"], "answer": "綠島"}, {"id": 12, "q": "臺南市市長想要邀請新住民參加市政府舉辦的文化交流活動，下列何者可能是市長邀請的對象？", "options": ["臺北到臺南讀大學的圓橙", "從澎湖到臺南工作的鎧崙", "有布農族血統的粒圈", "從越南搬到臺灣居住的嘉鍇"], "answer": "從越南搬到臺灣居住的嘉鍇"}, {"id": 13, "q": "有關海女的敘述，下列何者錯誤？", "options": ["是一種適應海洋的生活方式", "海女人數已愈來愈少", "海女採集的水產包含海菜、海膽等", "目前已經失傳，我們無法透過任何方式認識海女文化"], "answer": "目前已經失傳，我們無法透過任何方式認識海女文化"}, {"id": 14, "q": "下列哪一個島嶼不屬於臺灣的範圍？", "options": ["綠島", "金門列嶼", "東沙群島", "廈門"], "answer": "廈門"}, {"id": 15, "q": "下列哪一個臺灣的周邊島嶼距離臺灣島最遠？", "options": ["綠島", "龜山島", "南沙群島", "馬祖列嶼"], "answer": "南沙群島"}, {"id": 16, "q": "下列何者不是社會規範的功能？", "options": ["維持社會秩序", "約束個人行為", "統一各地的風俗習慣", "讓人際相處更和諧"], "answer": "統一各地的風俗習慣"}, {"id": 17, "q": "下列哪一種行為無法維持社會的秩序？", "options": ["強制全國的宗教信仰統一", "尊重各地風俗習慣", "遵守倫理道德", "共同遵守社會規範"], "answer": "強制全國的宗教信仰統一"}, {"id": 18, "q": "同學們正在討論社會規範，哪一位同學的觀念較正確？", "options": ["羽折：只有男孩滿月才能吃油飯慶祝，即使到現代社會也不能改變", "柚停：違反倫理道德對社會不會有任何影響", "梓盡：社會規範會隨著時間與社會發展而改變", "渴樺：風俗習慣是國家規定的，所有的臺灣人都必須參加豐年祭"], "answer": "梓盡：社會規範會隨著時間與社會發展而改變"}, {"id": 19, "q": "下列關於宗教信仰的敘述，哪一項錯誤？", "options": ["大多數宗教對於社會有負面教育意義", "宗教信仰能規範信徒的行為", "大多數宗教都有自己的規定", "大多數宗教都勸人為善"], "answer": "大多數宗教對於社會有負面教育意義"}, {"id": 20, "q": "關於社會規範的敘述，下列何者正確？", "options": ["無法保障個人權益", "只有少數人需要遵守", "目的在於維持社會秩序", "現代社會已全不適用"], "answer": "目的在於維持社會秩序"}, {"id": 21, "q": "下列何者不屬於風俗習慣的範圍？", "options": ["漢人會在中秋節與家人團聚", "阿美族各部落擇日舉辦豐年祭", "駕駛不得違規停車", "新生兒滿月時會請親朋好友吃蛋糕"], "answer": "駕駛不得違規停車"}, {"id": 22, "q": "下列哪一項屬於風俗習慣的範疇？", "options": ["遵守聖經上規定的博愛精神", "在公車上讓座給孕婦", "小孩滿月時送彌月蛋糕給親友", "駕駛不得違規停車"], "answer": "小孩滿月時送彌月蛋糕給親友"}, {"id": 23, "q": "下列有關風俗習慣的敘述，何者錯誤？", "options": ["有助於維持人際互動的和諧", "漢人和原住民族的風俗習慣都相同", "是穩定社會的力量之一", "生命禮俗、歲時節慶都屬於風俗習慣"], "answer": "漢人和原住民族的風俗習慣都相同"}, {"id": 24, "q": "有關倫理道德的敘述，何者正確？", "options": ["藉神明的力量約束信眾", "生命禮俗屬於倫理道德", "不同的群體可能重視相同的倫理道德", "是由政府規定的"], "answer": "不同的群體可能重視相同的倫理道德"}, {"id": 25, "q": "同學間互相幫助，彼此和諧相處，屬於哪一種社會規範？", "options": ["法律", "宗教信仰", "倫理道德", "風俗習慣"], "answer": "倫理道德"}, {"id": 26, "q": "下列哪一項不是遵守社會規範的影響？", "options": ["避免人與人之間發生衝突", "增加個人與群體的疏離感", "使大家和諧的相處", "維持社會秩序"], "answer": "增加個人與群體的疏離感"}, {"id": 27, "q": "倫理道德是指人與人之間合宜的相處方式及什麼？", "options": ["約定俗成的生活習慣", "歲時節慶活動", "規範信徒的行為", "判斷是非善惡的標準"], "answer": "判斷是非善惡的標準"}, {"id": 28, "q": "下列何者不是遵守社會規範所帶來的好處？", "options": ["人們和諧共處", "維持社會秩序", "避免發生衝突", "引起人際間的紛爭"], "answer": "引起人際間的紛爭"}, {"id": 29, "q": "有關漢人中秋節與阿美族豐年祭的敘述，下列何者錯誤？", "options": ["都有品嘗月餅、柚子的習俗", "都屬於社會規範中的風俗習慣", "都有助於維持人際互動的和諧", "都有許多人會在此時返鄉團聚"], "answer": "都有品嘗月餅、柚子的習俗"}, {"id": 30, "q": "關懷行動不便的同學並伸出援手，這種行為是遵守哪一種社會規範？", "options": ["法律", "風俗習慣", "倫理道德", "宗教信仰"], "answer": "倫理道德"}, {"id": 31, "q": "關於社會規範的敘述，下列何者正確？", "options": ["社會規範無法隨著社會變遷而調整", "不論哪一個群體，風俗習慣都相同", "社會規範都具有強制力", "遵守倫理道德，可以讓人際相處更加和諧"], "answer": "遵守倫理道德，可以讓人際相處更加和諧"}, {"id": 32, "q": "舅媽每到週日就到教堂做禮拜，有空也會跟著教會協助弱勢團體募款，請問這是哪一種社會規範的影響？", "options": ["風俗習慣", "宗教信仰", "倫理道德", "法律"], "answer": "宗教信仰"}, {"id": 33, "q": "法律具有什麼特性？甲.具有強制力　乙.可以維持社會秩序　丙.只有信徒需要遵守", "options": ["甲乙", "乙丙", "甲丙", "甲乙丙"], "answer": "甲乙"}, {"id": 34, "q": "世界上大部分的宗教都有什麼樣的特性？", "options": ["教人修身養性", "對社會有負面教育意義", "鼓勵人們逃避責任", "鼓勵大家做壞事"], "answer": "教人修身養性"}, {"id": 35, "q": "法律的制定目的是什麼？", "options": ["修身養性", "認識更多朋友", "豐富自己的生活", "維護社會秩序"], "answer": "維護社會秩序"}, {"id": 36, "q": "在家中唱卡拉OK到深夜，這種行為會造成什麼影響？", "options": ["製造噪音影響他人，警察可以取締罰款", "偶爾唱一下，沒有關係", "在家裡唱歌，不會影響到其他人", "這屬於個人的自由"], "answer": "製造噪音影響他人，警察可以取締罰款"}, {"id": 37, "q": "就讀小學五年級的媛刃，逛百貨公司玩具部時，看到一件喜歡的玩具，想買可是錢不夠，於是趁店員不注意時，將玩具放入口袋中，想要偷偷帶回家，但被監視器拍下，而且當場被抓到。關於媛刃的行為，下列敘述何者正確？", "options": ["他只要將玩具還給店家，就不算違反法律", "他尚未成年，所以不構成違反法律的行為", "他違法的程度，和騎乘機車未戴安全帽一樣", "他將玩具放入口袋中就是偷東西，是違法的行為"], "answer": "他將玩具放入口袋中就是偷東西，是違法的行為"}, {"id": 38, "q": "要保障每個人的權利不受他人侵犯，最好的方法為何？", "options": ["大家遵守法律", "大家努力賺錢", "大家努力選舉", "大家努力讀書"], "answer": "大家遵守法律"}, {"id": 39, "q": "下列哪一種狀況無法獲得國家賠償？", "options": ["因政府管理的路燈漏電而觸電重傷", "因路面鋪設不良，產生高低落差而跌倒受傷", "站在鞦韆上往下跳，導致腿部骨折", "因水溝未加蓋且未設護欄警示，不慎摔落水溝受傷"], "answer": "站在鞦韆上往下跳，導致腿部骨折"}, {"id": 40, "q": "把自己的住家弄得亂七八糟並散發出惡臭味，有可能會被罰款，最主要的原因為何？", "options": ["懶惰是萬惡之源", "法律規定住家應保持整齊清潔", "會影響鄰居的生活品質與環境衛生", "製造噪音擾人安寧"], "answer": "會影響鄰居的生活品質與環境衛生"}, {"id": 41, "q": "下列何者屬於違法行為？", "options": ["偷竊商店物品", "考試不及格", "不愛整潔", "上學遲到"], "answer": "偷竊商店物品"}, {"id": 42, "q": "我們需要下列何者來維持社會秩序，保障人民的權益？", "options": ["戒律", "法律", "公約", "族譜"], "answer": "法律"}, {"id": 43, "q": "籽耗想騎機車載弟弟去郊外遊玩，但籽耗的弟弟還小，找不到適合他的安全帽，所以籽耗的弟弟應該怎麼做比較合適？", "options": ["可以不用戴安全帽上路", "只要躲警察，不被抓到就好", "為了安全，去買或借一頂適合他的安全帽", "找不到適合的安全帽也是一個正當理由，不會被罰"], "answer": "為了安全，去買或借一頂適合他的安全帽"}, {"id": 44, "q": "語朔暑假時計畫造訪八仙山森林遊樂區，請問他無法看到下列哪一項特色景觀？", "options": ["水圳與埤塘", "舊伐木工人宿舍", "運送木材的列車", "森林景觀與自然生態"], "answer": "水圳與埤塘"}, {"id": 45, "q": "在桃園國際機場擴建的過程中，工程單位需填平數座埤塘，可能的目的是什麼？", "options": ["增加農田的灌溉用水", "將原本埤塘的土地規畫為生態公園", "防乾旱時埤塘水量不穩", "幫機場擴建獲取充足的使用空間"], "answer": "幫機場擴建獲取充足的使用空間"}, {"id": 46, "q": "下列臺灣不同的地形區，何者的位置在最南邊？", "options": ["桃園台地", "竹東丘陵", "臺中盆地", "屏東平原"], "answer": "屏東平原"}, {"id": 47, "q": "臺灣四周海岸風光形態各不相同，下列關於各地景觀的敘述，何者正確？", "options": ["西部海岸可見魚塭、蚵架等養殖漁業", "東部海岸地形曲折，多海灣、岬", "北部海岸常見珊瑚礁海岸", "南部海岸多見斷崖峭壁"], "answer": "西部海岸可見魚塭、蚵架等養殖漁業"}, {"id": 48, "q": "臺灣的丘陵和山地較多，地形起伏較大，對人們土地利用方面造成什麼影響？", "options": ["高樓大廈林立", "使用上受到較多限制", "利用山坡較陡峭的地方發展工業", "交通設施豐富"], "answer": "使用上受到較多限制"}, {"id": 49, "q": "今日臺北市不僅有多處中央行政機關，且商業大樓林立、人口密集度高等，成為熱鬧繁華的都市，其主要位在哪一種地形區？", "options": ["台地", "盆地", "山地", "平原"], "answer": "盆地"}, {"id": 50, "q": "「地勢高聳，地形起伏較大，坡度陡」，這是描述下列哪一種地形？", "options": ["丘陵", "盆地", "台地", "山地"], "answer": "山地"}, {"id": 51, "q": "旅行社推出「沿海鄉鎮、珊瑚礁石、歷史古城」逍遙遊，這樣的行程最可能安排在下列哪一個地點？", "options": ["花蓮縣秀林鄉", "苗栗縣竹南鎮", "屏東縣恆春鎮", "新北市瑞芳區"], "answer": "屏東縣恆春鎮"}, {"id": 52, "q": "下列關於臺灣水庫的敘述，何者正確？", "options": ["多興建在河川下游河道寬廣處", "部分水庫具有發電的功能", "興建水庫無法解決缺水問題", "興建水庫不會破壞生態環境"], "answer": "部分水庫具有發電的功能"}, {"id": 53, "q": "下列對於竹東丘陵的敘述，何者正確？", "options": ["位於南投縣", "小麥是該地的重要經濟農作", "當地有茶樹的生長，昔日不少居民從事製茶活動", "在此上空進行空拍，可見埤塘遍布"], "answer": "當地有茶樹的生長，昔日不少居民從事製茶活動"}, {"id": 54, "q": "臺灣早期是農業社會，為了獲得較穩定的水源，居民通常會採取什麼措施？", "options": ["搬到山地上", "移至海岸邊的沙洲耕作", "興建水圳、埤塘", "規畫水庫"], "answer": "興建水圳、埤塘"}, {"id": 55, "q": "近年來，臺灣西部海岸的養殖漁業為什麼更加興盛，也朝向觀光、教育推廣等方向發展？", "options": ["經濟的壓迫", "科技的進步", "人口的增加", "環境的保育"], "answer": "科技的進步"}, {"id": 56, "q": "關於臺灣地形的敘述，下列何者正確？", "options": ["地形種類單一，地貌單調", "山脈大多呈現南北走向", "台地所占比例最高，分布甚廣", "平原地形主要分布在東部"], "answer": "山脈大多呈現南北走向"}, {"id": 57, "q": "為什麼現今臺灣部分山地地區的產業開始轉型，發展森林教育與休閒觀光？", "options": ["科技進步", "森林資源被過度開發後仍然相當豐富", "運送木材的列車無法修理", "保護環境生態"], "answer": "保護環境生態"}, {"id": 58, "q": "下列哪一項不是臺灣島的特色？", "options": ["屬於南北狹長、多山地的島嶼", "島嶼形成主因與板塊間的推擠有關", "島上山脈多南北走向", "地震不常發生，偶爾才有嚴重災害"], "answer": "地震不常發生，偶爾才有嚴重災害"}, {"id": 59, "q": "地形是地表的形貌。在臺灣島的中央地帶，主要是分布下列哪一種地形？", "options": ["盆地", "山地", "丘陵", "台地"], "answer": "山地"}, {"id": 60, "q": "關於河川下游地區的敘述，下列何者錯誤？", "options": ["水庫分布密集", "人口聚集較多", "多元的土地利用情形", "地勢較平坦"], "answer": "水庫分布密集"}, {"id": 61, "q": "興建水庫能提供人們的用水，但是可能帶來什麼負面影響？", "options": ["造成工業用地減少", "限制農業的發展", "破壞原本的生態環境", "增加乾旱的發生"], "answer": "破壞原本的生態環境"}, {"id": 62, "q": "教育部今年舉辦全國學生美術比賽，主題是「畫我家鄉」。根據地表景觀，住在臺北市的同學的繪畫作品最可能有下列何者？", "options": ["台地上一大片農田", "丘陵坡地茶園廣布", "盆地內市區工商業繁榮", "山地的森林遊樂區"], "answer": "盆地內市區工商業繁榮"}, {"id": 63, "q": "八仙山從木材的產地轉型為森林遊樂區，這與人們哪一項觀念的提升有關？", "options": ["生態保護", "土地開發", "工業發展", "科學技術"], "answer": "生態保護"}, {"id": 64, "q": "臺灣的河川因受地形影響，大多呈現何種現象？", "options": ["坡度緩", "水流急", "由北往南流", "長度長"], "answer": "水流急"}, {"id": 65, "q": "關於起伏的地形與人們的土地利用方式，下列何者正確？", "options": ["臺灣丘陵與山地的面積較少，地形較平坦，容易形成都市", "隨著交通建設、科技進步，人們多往平坦地形發展，丘陵僅有休憩、遊玩的功能", "早期居住在丘陵的人們，多會在山坡平緩處從事農業活動", "現今山地區多數朝向開發森林資源，從事伐木等生產活動"], "answer": "早期居住在丘陵的人們，多會在山坡平緩處從事農業活動"}, {"id": 66, "q": "下列為臺灣冬季時各地氣候的敘述，何者錯誤？", "options": ["北部受季風影響而多雨", "北部受地形影響而少雨", "南部受山地阻擋而少雨", "南部的雨量比北部少"], "answer": "北部受地形影響而少雨"}, {"id": 67, "q": "政府在缺乏室內運動空間的學校增設風雨球場的目的與下列哪一項有關？", "options": ["因應多雨的氣候", "美化都市景觀", "預防寒害的發生", "減少教育經費"], "answer": "因應多雨的氣候"}, {"id": 68, "q": "薄銳原先的家住在山坡上的村落，但因颱風引發土石流，將整個村落沖毀，幸好他及時避難，但之後他只能跟著家人一起搬到政府規畫的新家。請問依據上述的文章，與氣候相關的自然災害帶給薄銳一家什麼改變？", "options": ["沒有任何變化", "產業活動的改變", "財產的損失", "國籍的更動"], "answer": "財產的損失"}, {"id": 69, "q": "上社會課時，老師請四位同學介紹臺南氣候，哪一位同學的敘述錯誤？", "options": ["醇汗：冬季乾燥少雨", "加偎：夏季炎熱少雨", "翰雲：冬季日照充足且風力強勁", "異心：夏季可能受颱風侵襲"], "answer": "加偎：夏季炎熱少雨"}, {"id": 70, "q": "萋聯打算前往臺灣旅遊，他害怕颱風打亂旅遊行程，你會推薦他避免在什麼季節來臺灣？", "options": ["春、秋兩季", "春、冬兩季", "夏、秋兩季", "夏、冬兩季"], "answer": "夏、秋兩季"}, {"id": 71, "q": "冬季時，同樣位於新竹縣境內的兩地，位於平地的竹北市氣候較溫暖，位於山地的尖石鄉氣候較寒冷，請問是受到下列哪一項因素的影響？", "options": ["自然災害", "季風風向", "颱風侵襲", "地勢高低"], "answer": "地勢高低"}, {"id": 72, "q": "臺灣每年常因梅雨、西南季風、颱風，引發豪雨，大多是發生在下列哪段時期？", "options": ["一月到四月", "五月到九月", "十月到十二月", "十二月到隔年二月"], "answer": "五月到九月"}, {"id": 73, "q": "下列何者是冬季時臺灣北部地區溼冷多雨的主要原因？", "options": ["受到西南季風的影響", "颱風帶來雨量", "受到東北季風的影響", "處於梅雨季節"], "answer": "受到東北季風的影響"}, {"id": 74, "q": "關於臺灣的氣候，下列敘述哪一項錯誤？", "options": ["全年降雨量約2500毫米", "每年五月至九月容易發生乾旱", "寒害較常發生在每年十二月到隔年二月", "秋季常受颱風侵襲"], "answer": "每年五月至九月容易發生乾旱"}, {"id": 75, "q": "鏵魚觀察臺灣的氣候，發現臺灣南部在冬季時較為乾燥少雨，請問這是受臺灣自然環境的哪一項因素影響？", "options": ["山地地形阻擋東北季風", "臺灣島經常發生地震", "冬季時氣溫可能降到攝氏10度以下", "位於颱風的移動路徑上"], "answer": "山地地形阻擋東北季風"}, {"id": 76, "q": "臺灣夏季受哪一種季風影響，常夾帶大量水氣，有時會帶來豪雨？", "options": ["西南季風", "東南季風", "東北季風", "西北季風"], "answer": "西南季風"}, {"id": 77, "q": "下列哪一項建築設計與臺灣多雨的氣候沒有關聯？", "options": ["騎樓", "遮雨棚", "露天操場", "風雨球場"], "answer": "露天操場"}, {"id": 78, "q": "臺灣每年五月到九月之間會有颱風、梅雨及西南季風，下列敘述何者錯誤？", "options": ["梅雨只是綿綿細雨，不會引發豪雨", "西南季風所引發的豪雨可能會造成淹水", "颱風的來襲常造成災害", "梅雨也可能會造成土石流"], "answer": "梅雨只是綿綿細雨，不會引發豪雨"}, {"id": 79, "q": "嬿輛是剛搬到臺灣的日本人，他居住的地方時常下雨，雨傘是他每天出門必備的物品，偶爾忘記帶傘，當地也有許多遮雨棚可以避雨。請問木村可能是居住在臺灣哪一個縣市？", "options": ["臺南市", "高雄市", "基隆市", "臺中市"], "answer": "基隆市"}, {"id": 80, "q": "忞鯡和朋友到臺南市沿海地區旅遊，當地有巨大的鹽山，導遊介紹當地的自然環境適合曬鹽，故早期是鹽的重要產地。請問當地的自然環境可能具有下列哪一項特性？", "options": ["地形起伏較大", "海岸地勢陡峭", "冬季乾燥少雨", "夏季炎熱少雨"], "answer": "冬季乾燥少雨"}, {"id": 81, "q": "綠屋頂的設計可以美化都市景觀，也能達到下列哪一個目的？", "options": ["能兼顧吸收雨水與排水的功能", "發展休閒觀光", "增加農作物產量", "增加學生運動時間"], "answer": "能兼顧吸收雨水與排水的功能"}, {"id": 82, "q": "臺灣中南部地區的降雨，主要發生在下列哪一個季節？", "options": ["冬季", "夏季", "春季", "秋季"], "answer": "夏季"}, {"id": 83, "q": "颱風為臺灣帶來豐沛的蓄水量，但也可能造成下列哪一種災害？", "options": ["土石流", "寒害", "火災", "旱災"], "answer": "土石流"}, {"id": 84, "q": "面對自然災害帶來的影響，應該如何做才是恰當的行為？", "options": ["移民到國外就不會遇到自然災害", "等災害發生後，再加以收拾就好", "省思土地的使用方式", "不需要做任何事"], "answer": "省思土地的使用方式"}, {"id": 85, "q": "臺灣冬季會受東北季風影響，夏季會受西南季風吹拂，請問這樣的氣候特性，主要是受什麼原因影響？", "options": ["國土面積狹小", "位於歐亞大陸和太平洋的交界", "海岸線過於狹長", "族群文化豐富"], "answer": "位於歐亞大陸和太平洋的交界"}, {"id": 86, "q": "基隆市因時常下雨，建造了什麼設施提供行人避雨？", "options": ["遮雨棚", "游泳池", "人行道", "河堤"], "answer": "遮雨棚"}, {"id": 87, "q": "下列哪一種情況下，不是可能會引發土石流的原因？", "options": ["連續多天的豪雨", "颱風來襲", "泥沙和土石隨著洪水傾瀉而下", "受到持續低溫影響"], "answer": "受到持續低溫影響"}, {"id": 88, "q": "下列哪一個地方最符合夏季多雨，冬季乾燥的條件？", "options": ["基隆", "屏東", "桃園", "宜蘭"], "answer": "屏東"}, {"id": 89, "q": "關於臺南氣候的敘述，下列何者錯誤？", "options": ["夏季常有颱風", "冬季日照充足", "五月到九月雨量較多", "冬季溼冷多雨"], "answer": "冬季溼冷多雨"}, {"id": 90, "q": "下列哪一種自然現象，不會使臺灣豪雨成災？", "options": ["梅雨", "寒害", "颱風", "西南季風"], "answer": "寒害"}, {"id": 91, "q": "臺灣的乾旱大多發生在下列哪段時期？", "options": ["十一月到隔年四月", "五月到九月", "十二月到隔年二月", "全年都有可能發生"], "answer": "十一月到隔年四月"}, {"id": 92, "q": "下列哪一項不會因為氣候型態而受到影響？", "options": ["栽種的農作物", "建築的設計", "國家的名稱", "人們生活空間的使用"], "answer": "國家的名稱"}, {"id": 93, "q": "臺灣由於受到季風影響，在不同季節，臺灣各地呈現出氣候的差異，下列關於臺灣氣候的敘述何者錯誤？", "options": ["北部冬季溼冷多雨", "南部夏季溼熱多雨", "北部冬季乾燥少雨", "南部冬季乾燥少雨"], "answer": "北部冬季乾燥少雨"}, {"id": 94, "q": "關於臺灣冬季氣候的敘述，下列何者錯誤？", "options": ["受東北季風影響", "北部溼冷多雨", "可能會發生寒害", "南部溼熱多雨"], "answer": "南部溼熱多雨"}, {"id": 95, "q": "早期人們結婚時，為什麼大多會避開農曆七月？", "options": ["天氣太炎熱", "容易遇到大雨", "對「鬼月」有忌諱", "是農業社會中最忙的時候"], "answer": "對「鬼月」有忌諱"}, {"id": 96, "q": "根據法律對少年的年齡認定，下列哪一項行為是少年可以做的事？", "options": ["到商店買酒", "參加歲時慶祝活動", "參加國小課後照顧班", "觀看限制級電視節目"], "answer": "參加歲時慶祝活動"}, {"id": 97, "q": "表哥和朋友從恆春騎機車沿著南迴公路到臺東，再沿著東部海岸往北，最後到臺北。這一路看到的海岸風貌，下列何者排序正確？（甲）岬角與海灣（乙）珊瑚礁海岸（丙）斷崖峭壁", "options": ["甲乙丙", "乙丙甲", "乙甲丙", "甲丙乙"], "answer": "乙丙甲"}, {"id": 98, "q": "某旅行社推出「鹽與製鹽的故事」之旅，這樣的行程應該會安排前往哪一個縣市？", "options": ["基隆市", "宜蘭縣", "臺南市", "南投縣"], "answer": "臺南市"}, {"id": 99, "q": "面對自然災害，我們在發展生活型態時，應避免下列哪一種行為？", "options": ["了解災害的特性", "省思人們對產業活動的規畫", "了解臺灣各地的氣候", "過度開發、利用自然環境"], "answer": "過度開發、利用自然環境"}, {"id": 100, "q": "早期漢人為了適應多雨的氣候，會使用哪一種方式避免雨水滲入屋內？", "options": ["使用茅草、木頭等材料修築屋頂", "將瓦片堆疊成斜屋頂", "用防水塗料對屋頂進行防水處理", "採用栽種植物的「綠屋頂」吸收雨水"], "answer": "將瓦片堆疊成斜屋頂"}], "lessons": [{"unit": "第一單元 臺灣我的家", "lesson": "第1課 我們生活的臺灣", "pages": "課本約 p.10~17", "points": ["臺灣的海陸位置：東邊太平洋、西邊臺灣海峽、北邊東海、南邊巴士海峽。", "從世界地圖上看，臺灣位於亞洲東部和太平洋的交界。", "臺灣周邊的鄰近國家：日本、南韓（韓國）、中國、菲律賓。", "臺灣的範圍包含本島及周邊島嶼：澎湖群島、金門列嶼、馬祖列嶼、龜山島、綠島、蘭嶼、琉球嶼（小琉球）、東沙群島、太平島（南沙群島）等。", "不同島嶼有不同的特色文化：金門多用紅磚紅瓦建築、澎湖居民常見蒙面服裝（防曬防風）、蘭嶼達悟族（雅美族）有拼板舟和特色頭髮舞。", "臺灣四面環海，海陸位置有利於海運、空運的發展，促進與世界的交流。"], "images": []}, {"unit": "第一單元 臺灣我的家", "lesson": "第2課 當我們生活在一起", "pages": "課本約 p.18~23", "points": ["社會規範包含：風俗習慣、宗教信仰、倫理道德、法律，功能是約束行為、維持社會秩序、讓人際相處更和諧。", "風俗習慣：生活習慣、生命禮俗（如滿月、成年禮）、歲時節慶（如中秋節、豐年祭）等，不同族群的風俗習慣不一定相同。", "宗教信仰：大部分宗教都有自己的規定，能約束信徒言行、勸人為善，社會上每個人都有信仰自由，應互相尊重。", "倫理道德：人與人之間合宜的相處方式（例如讓座、孝順、互助），不同族群可能重視相同的倫理道德。", "社會規範會隨著社會發展與觀念改變而調整，不是一成不變的（例如早期忌諱農曆七月結婚，現代較不忌諱）。"], "images": []}, {"unit": "第一單元 臺灣我的家", "lesson": "第3課 法律影響我們的生活", "pages": "課本約 p.24~33", "points": ["法律是由政府（立法機關）制定，具有強制力，保障人民權益、維護社會秩序，人民和政府都必須遵守。", "兒童及少年福利與權益保障法：保護未滿18歲的兒童及少年，例如禁止販售菸酒給未成年人、電視電影分級制度、提供生活扶助與課後照顧等。", "網路世界也要守法：使用網路資料要注意智慧財產權、不能在網路上隨意侮辱他人或散布不實言論（網路不是完全匿名、沒有責任的空間）。", "違法行為有輕重之分：有些只需繳罰款，情節嚴重的可能要負刑事責任（坐牢）。", "公權力與國家賠償：因為政府管理的公共設施（如路燈、路面、水溝）有缺失而受傷，可以申請國家賠償；但如果是自己貪玩或不當使用造成受傷，則不行。"], "images": []}, {"unit": "第二單元 我們生活的空間", "lesson": "第1課 河川對生活空間的影響", "pages": "課本約 p.38~45", "points": ["早期人們利用河川：捕魚、洗衣、灌溉、日常用水、水上運輸等。", "河川上游、中游：多高山、森林，自然生態豐富，人們常設自然保留區、休閒遊憩場所，也會興建水庫。", "河川下游：河道寬廣、地勢平坦，人口聚集，土地多作農田、魚塭、工廠、商店、住宅等利用。", "淡水河沿岸因貨物運輸興起的城鎮：大稻埕、艋舺、新莊、三峽、大溪；後來因河道淤積、運輸功能式微而沒落，部分轉型發展老街觀光。", "興建水庫：優點是提供水資源、具發電功能；缺點是會破壞原本的生態環境（例如影響當地動植物棲地）。", "臺灣河川坡度陡、水流急，多呈東西流向，早期曾阻礙南北交通發展，需要橋梁連接兩岸。", "河川整治例子：基隆河截彎取直、高雄愛河整治、宜蘭冬山河、臺中綠川等，整治能讓河川環境重獲新生。"], "images": []}, {"unit": "第二單元 我們生活的空間", "lesson": "第2課 氣候對生活空間的影響", "pages": "課本約 p.46~53", "points": ["臺灣南北雨量不同：北部冬季因東北季風影響，溼冷多雨；南部冬季較乾燥少雨。", "氣候影響建築設計：基隆、臺北等多雨地區常見騎樓、遮雨棚、風雨球場；台南沿海因日照強、風力大、夏季乾燥少雨，適合發展日晒鹽田（如七股鹽山）。", "氣候災害：豪雨（梅雨、西南季風、颱風，多發生在5月至9月）可能造成淹水、土石流；乾旱多發生在11月到隔年4月；冬季東北季風強烈時可能發生寒害。", "重大災害案例：基隆河截彎取直前常淹水；2009年莫拉克風災造成小林村土石流掩埋，居民遷村到新社區，但仍努力保留部落文化。", "面對氣候災害，人們應省思土地利用方式、了解在地氣候特性，而不是等災害發生才處理，也不應過度開發破壞自然環境。"], "images": []}]}
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var DATA = JSON.parse(document.getElementById('quiz-data').textContent);
+  var TF = DATA.tf;   // [{id,q,answer:"O"/"X"}]
+  var MC = DATA.mc;   // [{id,q,options:[...4],answer:"text"}]
+  var LESSONS = DATA.lessons || []; // [{unit,lesson,pages,points:[...],images:[{caption,dataUrl}]}]
+
+  var screens = {
+    home: document.getElementById('screen-home'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result'),
+    lessons: document.getElementById('screen-lessons'),
+    lessonDetail: document.getElementById('screen-lesson-detail')
+  };
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.toggle('active', k===name);
+    });
+    window.scrollTo(0,0);
+  }
+
+  // ---- 首頁選項 ----
+  var curMode = 'mix';
+  var curCount = 20;
+
+  document.getElementById('mode-group').addEventListener('click', function(e){
+    var t = e.target.closest('.pill'); if(!t) return;
+    document.querySelectorAll('#mode-group .pill').forEach(function(p){p.classList.remove('selected');});
+    t.classList.add('selected');
+    curMode = t.getAttribute('data-mode');
+    updateBestDisplay();
+  });
+  document.getElementById('count-group').addEventListener('click', function(e){
+    var t = e.target.closest('.pill'); if(!t) return;
+    document.querySelectorAll('#count-group .pill').forEach(function(p){p.classList.remove('selected');});
+    t.classList.add('selected');
+    var c = t.getAttribute('data-count');
+    curCount = (c==='all') ? 'all' : parseInt(c,10);
+    updateBestDisplay();
+  });
+
+  function bestKey(mode, count){ return 'shuoren_quiz_best_'+mode+'_'+count; }
+  function updateBestDisplay(){
+    var key = bestKey(curMode, curCount);
+    var raw = null;
+    try{ raw = localStorage.getItem(key); }catch(e){}
+    var card = document.getElementById('best-card');
+    if(raw){
+      var best = JSON.parse(raw);
+      document.getElementById('best-text').textContent = best.score + ' / ' + best.total + '（' + best.pct + '%）';
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  }
+  updateBestDisplay();
+
+  // ---- 出題 ----
+  function shuffle(arr){
+    var a = arr.slice();
+    for(var i=a.length-1;i>0;i--){
+      var j = Math.floor(Math.random()*(i+1));
+      var tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+
+  var quizQueue = [];   // 本局題目陣列
+  var qi = 0;
+  var score = 0;
+  var streak = 0;
+  var wrongList = [];
+  var answeredCurrent = false;
+
+  function buildQueue(){
+    var pool = [];
+    if(curMode==='tf' || curMode==='mix'){
+      TF.forEach(function(item){ pool.push({type:'tf', id:item.id, q:item.q, answer:item.answer}); });
+    }
+    if(curMode==='mc' || curMode==='mix'){
+      MC.forEach(function(item){
+        pool.push({type:'mc', id:item.id, q:item.q, options:shuffle(item.options), answer:item.answer});
+      });
+    }
+    pool = shuffle(pool);
+    if(curCount !== 'all'){
+      pool = pool.slice(0, Math.min(curCount, pool.length));
+    }
+    return pool;
+  }
+
+  document.getElementById('btn-start').addEventListener('click', function(){
+    quizQueue = buildQueue();
+    qi = 0; score = 0; streak = 0; wrongList = [];
+    document.getElementById('q-total').textContent = quizQueue.length;
+    showScreen('quiz');
+    renderQuestion();
+  });
+
+  function renderQuestion(){
+    answeredCurrent = false;
+    var item = quizQueue[qi];
+    document.getElementById('q-index').textContent = (qi+1);
+    document.getElementById('score-now').textContent = score;
+    document.getElementById('streak-text').textContent = streak>=2 ? ('🔥 連對 '+streak) : '';
+    var pct = Math.round((qi)/quizQueue.length*100);
+    document.getElementById('progress-fill').style.width = pct+'%';
+
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('btn-next').style.display = 'none';
+
+    var badge = document.getElementById('q-badge');
+    var tfArea = document.getElementById('tf-area');
+    var mcArea = document.getElementById('mc-area');
+
+    document.getElementById('q-text').textContent = item.q;
+
+    if(item.type === 'tf'){
+      badge.textContent = '是非題';
+      badge.className = 'q-badge tf';
+      tfArea.style.display = 'block';
+      mcArea.style.display = 'none';
+      mcArea.innerHTML = '';
+
+      var btnO = document.getElementById('tf-o');
+      var btnX = document.getElementById('tf-x');
+      btnO.className = 'tf-btn o';
+      btnX.className = 'tf-btn x';
+      btnO.onclick = function(){ handleTfAnswer('O', item); };
+      btnX.onclick = function(){ handleTfAnswer('X', item); };
+    } else {
+      badge.textContent = '選擇題';
+      badge.className = 'q-badge';
+      tfArea.style.display = 'none';
+      mcArea.style.display = 'block';
+      mcArea.innerHTML = '';
+      var tags = ['①','②','③','④'];
+      item.options.forEach(function(opt, idx){
+        var btn = document.createElement('div');
+        btn.className = 'opt-btn';
+        btn.innerHTML = '<span class="opt-tag">'+tags[idx]+'</span><span>'+escapeHtml(opt)+'</span>';
+        btn.onclick = function(){ handleMcAnswer(opt, btn, item); };
+        mcArea.appendChild(btn);
+      });
+    }
+  }
+
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function finishAnswer(isCorrect, item, yourAnswerText){
+    answeredCurrent = true;
+    if(isCorrect){
+      score++; streak++;
+      var msgs = ['答對了！真厲害 👍','太棒了！','完全正確 ✨','沒錯，就是這個！'];
+      document.getElementById('feedback').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+      document.getElementById('feedback').className = 'feedback correct';
+    } else {
+      streak = 0;
+      document.getElementById('feedback').textContent = '答錯囉，再接再厲！';
+      document.getElementById('feedback').className = 'feedback wrong';
+      wrongList.push({
+        type:item.type, id:item.id, q:item.q,
+        correct: item.answer,
+        your: yourAnswerText
+      });
+    }
+    document.getElementById('score-now').textContent = score;
+    document.getElementById('streak-text').textContent = streak>=2 ? ('🔥 連對 '+streak) : '';
+    document.getElementById('btn-next').style.display = 'block';
+  }
+
+  function handleTfAnswer(choice, item){
+    if(answeredCurrent) return;
+    var btnO = document.getElementById('tf-o');
+    var btnX = document.getElementById('tf-x');
+    btnO.classList.add('disabled'); btnX.classList.add('disabled');
+    var correctBtn = (item.answer==='O') ? btnO : btnX;
+    correctBtn.classList.add('correct');
+    if(choice !== item.answer){
+      (choice==='O'?btnO:btnX).classList.add('wrong');
+    }
+    finishAnswer(choice===item.answer, item, choice);
+  }
+
+  function handleMcAnswer(opt, btnEl, item){
+    if(answeredCurrent) return;
+    var all = document.querySelectorAll('#mc-area .opt-btn');
+    all.forEach(function(b){ b.classList.add('disabled'); });
+    all.forEach(function(b){
+      var txt = b.querySelector('span:nth-child(2)').textContent;
+      if(txt === item.answer) b.classList.add('correct');
+    });
+    if(opt !== item.answer){
+      btnEl.classList.add('wrong');
+    }
+    finishAnswer(opt===item.answer, item, opt);
+  }
+
+  document.getElementById('btn-next').addEventListener('click', function(){
+    qi++;
+    if(qi >= quizQueue.length){
+      finishQuiz();
+    } else {
+      renderQuestion();
+    }
+  });
+
+  function finishQuiz(){
+    document.getElementById('progress-fill').style.width = '100%';
+    var total = quizQueue.length;
+    var pct = total>0 ? Math.round(score/total*100) : 0;
+    document.getElementById('result-score').textContent = score + ' / ' + total;
+    document.getElementById('result-pct').textContent = '答對率 ' + pct + '%';
+
+    var starsEl = document.getElementById('result-stars');
+    var stars = pct>=95 ? '⭐⭐⭐⭐⭐' : pct>=85 ? '⭐⭐⭐⭐' : pct>=70 ? '⭐⭐⭐' : pct>=50 ? '⭐⭐' : '⭐';
+    starsEl.textContent = stars;
+
+    var key = bestKey(curMode, curCount);
+    var bestNote = document.getElementById('best-note');
+    bestNote.textContent = '';
+    try{
+      var raw = localStorage.getItem(key);
+      var prevBest = raw ? JSON.parse(raw) : null;
+      if(!prevBest || pct > prevBest.pct){
+        localStorage.setItem(key, JSON.stringify({score:score, total:total, pct:pct}));
+        bestNote.textContent = '🎉 創下這個組合的新紀錄！';
+      }
+    }catch(e){}
+
+    var reviewCard = document.getElementById('review-card');
+    var reviewList = document.getElementById('review-list');
+    reviewList.innerHTML = '';
+    if(wrongList.length > 0){
+      reviewCard.style.display = 'block';
+      document.getElementById('review-count').textContent = wrongList.length;
+      wrongList.forEach(function(w){
+        var div = document.createElement('div');
+        div.className = 'review-item';
+        var typeLabel = w.type==='tf' ? '是非題' : '選擇題';
+        var correctDisp = w.type==='tf' ? (w.correct==='O' ? '○ 對' : '✕ 錯') : w.correct;
+        var yourDisp = w.type==='tf' ? (w.your==='O' ? '○ 對' : '✕ 錯') : w.your;
+        div.innerHTML =
+          '<div class="review-q">['+typeLabel+' 第'+w.id+'題] '+escapeHtml(w.q)+'</div>' +
+          '<div class="review-your">你的答案：'+escapeHtml(yourDisp)+'</div>' +
+          '<div class="review-ans">正確答案：'+escapeHtml(correctDisp)+'</div>';
+        reviewList.appendChild(div);
+      });
+    } else {
+      reviewCard.style.display = 'none';
+    }
+    document.getElementById('review-toggle').textContent = '▼ 查看答錯的題目（'+wrongList.length+' 題）';
+    reviewList.style.display = 'none';
+
+    showScreen('result');
+  }
+
+  document.getElementById('review-toggle').addEventListener('click', function(){
+    var list = document.getElementById('review-list');
+    var show = list.style.display === 'none';
+    list.style.display = show ? 'block' : 'none';
+    this.textContent = (show?'▲ 收合':'▼ 查看') + '答錯的題目（'+wrongList.length+' 題）';
+  });
+
+  document.getElementById('btn-again').addEventListener('click', function(){
+    quizQueue = buildQueue();
+    qi = 0; score = 0; streak = 0; wrongList = [];
+    document.getElementById('q-total').textContent = quizQueue.length;
+    showScreen('quiz');
+    renderQuestion();
+  });
+
+  document.getElementById('btn-home').addEventListener('click', function(){
+    updateBestDisplay();
+    showScreen('home');
+  });
+
+  // ---- 課文內容 ----
+  function renderLessonList(){
+    var listEl = document.getElementById('lesson-list');
+    listEl.innerHTML = '';
+    LESSONS.forEach(function(ls, idx){
+      var card = document.createElement('div');
+      card.className = 'lesson-card';
+      card.innerHTML =
+        '<div class="lesson-unit">'+escapeHtml(ls.unit||'')+'</div>' +
+        '<div class="lesson-title">'+escapeHtml(ls.lesson||'')+'</div>' +
+        '<div class="lesson-pages">'+escapeHtml(ls.pages||'')+'</div>';
+      card.addEventListener('click', function(){ showLessonDetail(idx); });
+      listEl.appendChild(card);
+    });
+  }
+
+  function showLessonDetail(idx){
+    var ls = LESSONS[idx];
+    if(!ls) return;
+    document.getElementById('lesson-detail-unit').textContent = ls.unit || '';
+    document.getElementById('lesson-detail-title').textContent = ls.lesson || '';
+    document.getElementById('lesson-detail-pages').textContent = ls.pages || '';
+
+    var ptEl = document.getElementById('lesson-detail-points');
+    ptEl.innerHTML = '';
+    (ls.points||[]).forEach(function(p){
+      var li = document.createElement('li');
+      li.textContent = p;
+      ptEl.appendChild(li);
+    });
+
+    var imgWrap = document.getElementById('lesson-detail-images');
+    imgWrap.innerHTML = '';
+    if(ls.images && ls.images.length > 0){
+      var gallery = document.createElement('div');
+      gallery.className = 'img-gallery';
+      ls.images.forEach(function(im){
+        var img = document.createElement('img');
+        img.src = im.dataUrl;
+        img.alt = im.caption || '';
+        gallery.appendChild(img);
+        if(im.caption){
+          var cap = document.createElement('div');
+          cap.className = 'lesson-pages';
+          cap.textContent = im.caption;
+          gallery.appendChild(cap);
+        }
+      });
+      imgWrap.appendChild(gallery);
+    } else {
+      var note = document.createElement('div');
+      note.className = 'img-empty-note';
+      note.textContent = '這一課的課本內頁圖片還沒補上，拍照傳過來之後會補進來。';
+      imgWrap.appendChild(note);
+    }
+
+    showScreen('lessonDetail');
+    window.scrollTo(0,0);
+  }
+
+  document.getElementById('btn-goto-lessons').addEventListener('click', function(){
+    renderLessonList();
+    showScreen('lessons');
+  });
+  document.getElementById('lessons-back-home').addEventListener('click', function(){
+    showScreen('home');
+  });
+  document.getElementById('lesson-detail-back').addEventListener('click', function(){
+    showScreen('lessons');
+  });
+
+})();
+</script>
+</body>
+</html>
